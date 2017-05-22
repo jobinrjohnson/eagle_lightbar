@@ -7,8 +7,7 @@
 #include <ctype.h>
 #include <pthread.h>
 
-#define TIMEOUT 1000
-#define ERR -1
+#define TIMEOUT 2
 
 char const* const RED_ILLUMINATION_FILE = "/sys/class/illumination/7";
 char const* const GREEN_ILLUMINATION_FILE = "/sys/class/illumination/8";
@@ -40,12 +39,11 @@ int random_number(int min_num, int max_num) {
 
 	if (min_num < max_num) {
 		low_num = min_num;
-		hi_num = max_num + 1; // include max_num in output
+		hi_num = max_num + 1;
 	} else {
-		low_num = max_num + 1; // include max_num in output
+		low_num = max_num + 1;
 		hi_num = min_num;
 	}
-	//srand(time(NULL));
 	result = (rand() % (hi_num - low_num)) + low_num;
 	return result;
 }
@@ -70,7 +68,6 @@ void write_random_values(void* args) {
 		write_int(RED_ILLUMINATION_FILE, random_number(20, 255));
 		write_int(GREEN_ILLUMINATION_FILE, random_number(20, 255));
 		write_int(BLUE_ILLUMINATION_FILE, random_number(20, 255));
-//		printf("\n");
 		usleep(400);
 	}
 }
@@ -83,19 +80,12 @@ int main() {
 	char buffer[15];
 	int gotten;
 	for (;;) {
-//		char status[1000] = "";
-//		while ((gotten = read(fh, buffer, 64))) {
-//			buffer[gotten] = '\0';
-//			strcat(status, buffer);
-//		}
 		fh = open("/proc/asound/card0/pcm0p/sub0/status", O_RDONLY);
 		gotten = read(fh, buffer, 14);
 		buffer[gotten] = '\0';
 
 		trim(buffer);
-//		printf("%s", buffer);
 		if (strcmp(buffer, "closed") == 0) {
-//			printf(" ||  closed\n");
 			if (IS_PLAYING == 1) {
 				IS_PLAYING = 0;
 				write_int(ILLUMINATION_FILE, 0);
@@ -111,9 +101,9 @@ int main() {
 
 		}
 		fflush(stdout);
-//		fflush(stderr);
-		sleep(2);
+		sleep(TIMEOUT);
 	}
+	write_int(ILLUMINATION_FILE, 0);
 	pthread_join(player, NULL);
 	return 0;
 
