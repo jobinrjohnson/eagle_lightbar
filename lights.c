@@ -5,6 +5,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include <pthread.h>
 
 #define TIMEOUT 1000
 #define ERR -1
@@ -81,8 +82,19 @@ int main() {
 		buffer[gotten] = '\0';
 
 		trim(buffer);
-		printf("%s", buffer);
+//		printf("%s", buffer);
+		if (strcmp(buffer, "closed") == 0) {
+//			printf(" ||  closed\n");
+			if (IS_PLAYING == 1) {
+				IS_PLAYING = 0;
+				write_int(ILLUMINATION_FILE, 0);
+			}
+		} else {
 
+			if (IS_PLAYING != 1) {
+				write_int(ILLUMINATION_FILE, 21);
+				IS_PLAYING = 1;
+			}
 
 		}
 		fflush(stdout);
