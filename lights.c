@@ -1,10 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <time.h>
 #include <string.h>
-#include <ctype.h>
 #include <pthread.h>
 
 #define TIMEOUT 2
