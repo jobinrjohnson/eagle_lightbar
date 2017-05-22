@@ -65,8 +65,19 @@ void trim(char *str) {
 		memmove(str, start, (end - start) + 1);
 }
 
+void write_random_values(void* args) {
+	while (IS_PLAYING == 1) {
+		write_int(RED_ILLUMINATION_FILE, random_number(20, 255));
+		write_int(GREEN_ILLUMINATION_FILE, random_number(20, 255));
+		write_int(BLUE_ILLUMINATION_FILE, random_number(20, 255));
+//		printf("\n");
+		usleep(400);
+	}
+}
+
 int main() {
 
+	pthread_t player;
 
 	int fh;
 	char buffer[15];
@@ -88,11 +99,13 @@ int main() {
 			if (IS_PLAYING == 1) {
 				IS_PLAYING = 0;
 				write_int(ILLUMINATION_FILE, 0);
+				pthread_join(player, NULL);
 			}
 		} else {
 
 			if (IS_PLAYING != 1) {
 				write_int(ILLUMINATION_FILE, 21);
+				pthread_create(&player, NULL, write_random_values, NULL);
 				IS_PLAYING = 1;
 			}
 
@@ -101,6 +114,7 @@ int main() {
 //		fflush(stderr);
 		sleep(2);
 	}
+	pthread_join(player, NULL);
 	return 0;
 
 }
