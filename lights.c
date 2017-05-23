@@ -73,7 +73,7 @@ void* write_random_values(void* args) {
 		g = g < 1 ? random_number(0, 255) : g;
 		b = b < 1 ? random_number(0, 255) : b;
 		//printf("%d,%d,%d\n",r,g,b);
-		usleep(50*1000);
+		usleep(50 * 1000);
 	}
 	return NULL;
 }
@@ -81,30 +81,33 @@ void* write_random_values(void* args) {
 int main() {
 
 	pthread_t player;
-
 	int fh;
 	char buffer[15];
 	int gotten;
 	for (;;) {
+		fh = 0;
 		fh = open("/proc/asound/card0/pcm0p/sub0/status", O_RDONLY);
-		gotten = read(fh, buffer, 14);
-		buffer[gotten] = '\0';
+		if (fh > 0) {
+			gotten = read(fh, buffer, 14);
+			buffer[gotten] = '\0';
 
-		trim(buffer);
-		if (strcmp(buffer, "closed") == 0) {
-			if (IS_PLAYING == 1) {
-				IS_PLAYING = 0;
-				write_int(ILLUMINATION_FILE, 0);
-				pthread_join(player, NULL);
+			trim(buffer);
+			if (strcmp(buffer, "closed") == 0) {
+				if (IS_PLAYING == 1) {
+					IS_PLAYING = 0;
+					write_int(ILLUMINATION_FILE, 0);
+					pthread_join(player, NULL);
+				}
+			} else {
+
+				if (IS_PLAYING != 1) {
+					write_int(ILLUMINATION_FILE, 21);
+					pthread_create(&player, NULL, write_random_values, NULL);
+					IS_PLAYING = 1;
+				}
+
 			}
-		} else {
-
-			if (IS_PLAYING != 1) {
-				write_int(ILLUMINATION_FILE, 21);
-				pthread_create(&player, NULL, write_random_values, NULL);
-				IS_PLAYING = 1;
-			}
-
+			close(fh);
 		}
 		fflush(stdout);
 		sleep(TIMEOUT);
