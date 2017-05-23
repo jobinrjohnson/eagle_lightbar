@@ -70,8 +70,8 @@ void* write_random_values(void* args) {
 		write_int(GREEN_ILLUMINATION_FILE, g--);
 		write_int(BLUE_ILLUMINATION_FILE, b--);
 		r = r < 1 ? random_number(0, 255) : r;
-		g = g < 1 ? random_number(r, 255) : g;
-		b = b < 1 ? random_number(g, 255) : b;
+		g = g < 1 ? random_number(0, 255) : g;
+		b = b < 1 ? random_number(0, 255) : b;
 		//printf("%d,%d,%d\n",r,g,b);
 		usleep(50*1000);
 	}
