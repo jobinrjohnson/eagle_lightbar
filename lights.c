@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <pthread.h>
+#include <ctype.h>
 
 #define TIMEOUT 2
 
@@ -60,13 +61,21 @@ void trim(char *str) {
 		memmove(str, start, (end - start) + 1);
 }
 
-void write_random_values(void* args) {
+void* write_random_values(void* args) {
+	int r = random_number(20, 255);
+	int g = random_number(20, 255);
+	int b = random_number(20, 255);
 	while (IS_PLAYING == 1) {
-		write_int(RED_ILLUMINATION_FILE, random_number(20, 255));
-		write_int(GREEN_ILLUMINATION_FILE, random_number(20, 255));
-		write_int(BLUE_ILLUMINATION_FILE, random_number(20, 255));
-		usleep(400);
+		write_int(RED_ILLUMINATION_FILE, r--);
+		write_int(GREEN_ILLUMINATION_FILE, g--);
+		write_int(BLUE_ILLUMINATION_FILE, b--);
+		r = r < 1 ? random_number(0, 255) : r;
+		g = g < 1 ? random_number(r, 255) : g;
+		b = b < 1 ? random_number(g, 255) : b;
+		//printf("%d,%d,%d\n",r,g,b);
+		usleep(50*1000);
 	}
+	return NULL;
 }
 
 int main() {
