@@ -18,7 +18,6 @@ int IS_PLAYING = 0;
 
 static int write_int(char const* path, int value) {
 	int fd;
-//	printf("%d,",value);
 	fd = open(path, O_WRONLY);
 	if (fd >= 0) {
 		char buffer[20] = { 0, };
@@ -27,7 +26,6 @@ static int write_int(char const* path, int value) {
 		close(fd);
 		return amt == -1 ? -1 : 0;
 	} else {
-//		printf("write_int failed to open %s\n", path);
 		return -1;
 	}
 }
@@ -72,8 +70,9 @@ void* write_random_values(void* args) {
 		r = r < 1 ? random_number(0, 255) : r;
 		g = g < 1 ? random_number(0, 255) : g;
 		b = b < 1 ? random_number(0, 255) : b;
-		//printf("%d,%d,%d\n",r,g,b);
-		usleep(50 * 1000);
+		if(IS_PLAYING == 1){
+			usleep(50 * 1000);
+		}
 	}
 	return NULL;
 }
@@ -109,7 +108,6 @@ int main() {
 			}
 			close(fh);
 		}
-		fflush(stdout);
 		sleep(TIMEOUT);
 	}
 	write_int(ILLUMINATION_FILE, 0);
