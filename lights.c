@@ -7,6 +7,8 @@
 
 #define TIMEOUT 2
 
+char const* const STATUS_FILE = "/proc/asound/card0/pcm0p/sub0/status";
+
 char const* const RED_ILLUMINATION_FILE = "/sys/class/illumination/7";
 char const* const GREEN_ILLUMINATION_FILE = "/sys/class/illumination/8";
 char const* const BLUE_ILLUMINATION_FILE = "/sys/class/illumination/6";
@@ -85,7 +87,7 @@ int main() {
 	int gotten;
 	for (;;) {
 		fh = 0;
-		fh = open("/proc/asound/card0/pcm0p/sub0/status", O_RDONLY);
+		fh = open(STATUS_FILE, O_RDONLY);
 		if (fh > 0) {
 			gotten = read(fh, buffer, 14);
 			buffer[gotten] = '\0';
